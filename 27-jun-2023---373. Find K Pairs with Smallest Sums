@@ -1,0 +1,36 @@
+class Solution {
+public:
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<vector<int>> result;
+        
+        // Create a min heap to store pairs with their sums
+        auto cmp = [](const vector<int>& a, const vector<int>& b) {
+            return a[0] + a[1] > b[0] + b[1];
+        };
+        priority_queue<vector<int>, vector<vector<int>>, decltype(cmp)> minHeap(cmp);
+        
+        // Add pairs of (nums1[i], nums2[0]) to the min heap
+        for (int i = 0; i < nums1.size(); i++) {
+            minHeap.push({nums1[i], nums2[0], i, 0});
+        }
+        
+        // Process pairs from the min heap until k pairs are obtained or the min heap becomes empty
+        while (!minHeap.empty() && result.size() < k) {
+            auto pair = minHeap.top();
+            minHeap.pop();
+            
+            int i = pair[2];
+            int j = pair[3];
+            
+            // Add the pair (nums1[i], nums2[j]) to the result
+            result.push_back({pair[0], pair[1]});
+            
+            // If j+1 is less than the length of nums2, add the pair (nums1[i], nums2[j+1]) to the min heap
+            if (j + 1 < nums2.size()) {
+                minHeap.push({nums1[i], nums2[j+1], i, j+1});
+            }
+        }
+        
+        return result;
+    }
+};
